@@ -82,7 +82,7 @@ gui.addColor(rendererParameters, 'clearColor').onChange(() => {
 /**
  * Material
  */
-const materialParameters = { color: '#ff764d', halftoneResolution: 50 };
+const materialParameters = { color: '#ff764d', halftoneResolution: 50, lowThreshold: -0.8, highThreshold: 1.5 };
 
 const material = new THREE.ShaderMaterial({
   vertexShader: halftoneVertexShader,
@@ -92,6 +92,8 @@ const material = new THREE.ShaderMaterial({
     uShadeColor: new THREE.Uniform(new THREE.Color(materialParameters.shadeColor)),
     uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
     uHalftoneResolution: new THREE.Uniform(materialParameters.halftoneResolution),
+    uLowThreshold: new THREE.Uniform(materialParameters.lowThreshold),
+    uHighThreshold: new THREE.Uniform(materialParameters.highThreshold),
   },
 });
 
@@ -100,6 +102,12 @@ gui.addColor(materialParameters, 'color').onChange(() => {
 });
 gui.add(materialParameters, 'halftoneResolution', 1, 120, 1).onChange(() => {
   material.uniforms.uHalftoneResolution.value = materialParameters.halftoneResolution;
+});
+gui.add(materialParameters, 'lowThreshold', -2, 1.5, 0.1).onChange(() => {
+  material.uniforms.uLowThreshold.value = materialParameters.lowThreshold;
+});
+gui.add(materialParameters, 'highThreshold', -2, 1.5, 0.1).onChange(() => {
+  material.uniforms.uHighThreshold.value = materialParameters.highThreshold;
 });
 
 /**
