@@ -65,49 +65,79 @@ controls.enableDamping = true;
  * Renderer
  */
 const rendererParameters = {};
-rendererParameters.clearColor = '#26132f';
+rendererParameters.backgroundColor = '#26132f';
 
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
 });
-renderer.setClearColor(rendererParameters.clearColor);
+renderer.setClearColor(rendererParameters.backgroundColor);
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(sizes.pixelRatio);
 
-gui.addColor(rendererParameters, 'clearColor').onChange(() => {
-  renderer.setClearColor(rendererParameters.clearColor);
+gui.addColor(rendererParameters, 'backgroundColor').onChange(() => {
+  renderer.setClearColor(rendererParameters.backgroundColor);
 });
 
 /**
  * Material
  */
-const materialParameters = { color: '#ff764d', halftoneResolution: 50, lowThreshold: -0.8, highThreshold: 1.5 };
+const materialParameters = {
+  color: '#ff764d',
+  repetition: 100,
+
+  highlightColor: '#E5FFE0',
+  highlightLowThreshold: 0.5,
+  highlightHighThreshold: 1.5,
+
+  shadowColor: '#8E19B8',
+  shadowLowThreshold: -0.8,
+  shadowHighThreshold: 1.5,
+};
 
 const material = new THREE.ShaderMaterial({
   vertexShader: halftoneVertexShader,
   fragmentShader: halftoneFragmentShader,
   uniforms: {
     uColor: new THREE.Uniform(new THREE.Color(materialParameters.color)),
-    uShadeColor: new THREE.Uniform(new THREE.Color(materialParameters.shadeColor)),
     uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
-    uHalftoneResolution: new THREE.Uniform(materialParameters.halftoneResolution),
-    uLowThreshold: new THREE.Uniform(materialParameters.lowThreshold),
-    uHighThreshold: new THREE.Uniform(materialParameters.highThreshold),
+    uRepetition: new THREE.Uniform(materialParameters.repetition),
+
+    uShadowColor: new THREE.Uniform(new THREE.Color(materialParameters.shadowColor)),
+    uShadowLowThreshold: new THREE.Uniform(materialParameters.shadowLowThreshold),
+    uShadowHighThreshold: new THREE.Uniform(materialParameters.shadowHighThreshold),
+
+    uHighlightColor: new THREE.Uniform(new THREE.Color(materialParameters.highlightColor)),
+    uHighlightLowThreshold: new THREE.Uniform(materialParameters.highlightLowThreshold),
+    uHighlightHighThreshold: new THREE.Uniform(materialParameters.highlightHighThreshold),
   },
 });
 
 gui.addColor(materialParameters, 'color').onChange(() => {
   material.uniforms.uColor.value.set(materialParameters.color);
 });
-gui.add(materialParameters, 'halftoneResolution', 1, 120, 1).onChange(() => {
-  material.uniforms.uHalftoneResolution.value = materialParameters.halftoneResolution;
+gui.add(materialParameters, 'repetition', 1, 150, 1).onChange(() => {
+  material.uniforms.uRepetition.value = materialParameters.repetition;
 });
-gui.add(materialParameters, 'lowThreshold', -2, 1.5, 0.1).onChange(() => {
-  material.uniforms.uLowThreshold.value = materialParameters.lowThreshold;
+
+gui.addColor(materialParameters, 'highlightColor').onChange(() => {
+  material.uniforms.uHighlightColor.value.set(materialParameters.highlightColor);
 });
-gui.add(materialParameters, 'highThreshold', -2, 1.5, 0.1).onChange(() => {
-  material.uniforms.uHighThreshold.value = materialParameters.highThreshold;
+gui.add(materialParameters, 'highlightLowThreshold', -5, 5, 0.1).onChange(() => {
+  material.uniforms.uHighlightLowThreshold.value = materialParameters.highlightLowThreshold;
+});
+gui.add(materialParameters, 'highlightHighThreshold', -5, 5, 0.1).onChange(() => {
+  material.uniforms.uHighlightHighThreshold.value = materialParameters.highlightHighThreshold;
+});
+
+gui.addColor(materialParameters, 'shadowColor').onChange(() => {
+  material.uniforms.uShadowColor.value.set(materialParameters.shadowColor);
+});
+gui.add(materialParameters, 'shadowLowThreshold', -5, 5, 0.1).onChange(() => {
+  material.uniforms.uShadowLowThreshold.value = materialParameters.shadowLowThreshold;
+});
+gui.add(materialParameters, 'shadowHighThreshold', -5, 5, 0.1).onChange(() => {
+  material.uniforms.uShadowHighThreshold.value = materialParameters.shadowHighThreshold;
 });
 
 /**
@@ -144,7 +174,7 @@ const tick = () => {
   // Rotate objects
   if (suzanne) {
     suzanne.rotation.x = -elapsedTime * 0.1;
-    suzanne.rotation.y = elapsedTime * 0.2;
+    suzanne.rotation.y = elapsedTime * 0.25;
   }
 
   sphere.rotation.x = -elapsedTime * 0.1;
